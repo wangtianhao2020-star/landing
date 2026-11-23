@@ -17,7 +17,9 @@
   --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
   color-scheme:dark;
 }
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;font-family:var(--serif)}
+html{height:100%}
+body{position:fixed;left:0;top:0;width:100%;height:var(--H,100dvh)}
+html,body{margin:0;background:var(--bg);color:var(--ink);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;font-family:var(--serif)}
 #c,#gl3{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pane{position:absolute;inset:0;transition:opacity .5s ease;overflow:hidden}
 .pane.hide{opacity:0;pointer-events:none}
@@ -63,6 +65,7 @@ h1 .w{display:block;color:var(--ink)} h1 .b{display:block;color:var(--blue)} h1 
 .law.on{background:rgba(90,176,255,.16);box-shadow:inset 0 -2px 0 var(--blue)}
 .law.on b{color:var(--blue)}
 .law:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+@media (max-height:440px){h1{font-size:clamp(26px,11vh,46px)}h1 .w,h1 .b{display:inline}.lede{font-size:clamp(11px,3.1vh,14px)}.disc{font-size:8.5px;line-height:1.4}.right{padding-top:clamp(14px,7vh,40px)}}
 /* 结算 */
 .big{margin:0;font-weight:900;font-size:clamp(36px,15vh,92px);line-height:1;letter-spacing:.08em}
 .why{margin:0;font-size:clamp(12px,3.4vh,17px);line-height:1.55;color:var(--dim);max-width:24em}
@@ -79,8 +82,18 @@ h1 .w{display:block;color:var(--ink)} h1 .b{display:block;color:var(--blue)} h1 
 .ghost:focus-visible{box-shadow:0 0 0 2px #fff}
 #res.fail .shade{background:linear-gradient(90deg,rgba(40,0,4,.94) 0%,rgba(40,0,4,.8) 34%,rgba(90,0,8,.45) 62%,rgba(40,0,4,.7) 100%)}
 #res.fail .kick{color:var(--red)} #res.fail .go{background:var(--red);color:#fff;box-shadow:0 0 0 1px rgba(255,90,78,.6),0 8px 30px rgba(255,60,50,.4)}
-#rot{display:none;align-items:center;justify-content:center;background:var(--bg);z-index:9;font-size:18px;letter-spacing:.2em}
-@media (orientation:portrait) and (max-width:700px){#rot{display:flex}}
+#rot{display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9;text-align:center;padding:24px max(24px,env(safe-area-inset-left,0px));box-sizing:border-box;
+  background:linear-gradient(180deg,rgba(3,5,12,.9) 0%,rgba(3,5,12,.5) 45%,rgba(3,5,12,.92) 100%)}
+#rot .rk{font:500 11px/1 var(--mono);letter-spacing:.3em;color:var(--blue);text-transform:uppercase}
+#rot .rt{font-weight:900;font-size:clamp(40px,13vw,64px);line-height:1.1;letter-spacing:.06em}#rot .rt span{display:block}#rot .rt b{display:block;color:var(--blue)}
+#rot .ph{width:54px;height:96px;margin:18px 0 6px;border:2px solid var(--ink);border-radius:12px;position:relative;animation:turn 2.6s ease-in-out infinite;box-shadow:0 0 24px rgba(90,176,255,.45)}
+#rot .ph i{position:absolute;left:50%;bottom:6px;width:16px;height:3px;margin-left:-8px;border-radius:2px;background:var(--ink);opacity:.7}
+@keyframes turn{0%,25%{transform:rotate(0)}55%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+#rot .rs{font-weight:700;font-size:20px;letter-spacing:.3em}
+#rot .rn{font-size:12px;line-height:1.6;color:var(--dim);max-width:22em}
+#rot .rd{position:absolute;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom,0px));font-size:10px;color:rgba(242,239,232,.42)}
+@media (prefers-reduced-motion:reduce){#rot .ph{animation:none;transform:rotate(-90deg)}}
+@media (orientation:portrait) and (max-width:700px){#rot{display:flex}#intro,#res{visibility:hidden}}
 @media (prefers-reduced-motion:reduce){.pane,.card{transition:none}}
 </style>
 </head>
@@ -98,10 +111,9 @@ h1 .w{display:block;color:var(--ink)} h1 .b{display:block;color:var(--blue)} h1 
       <p class="lede">短五边交给你：<em>进近、对准、拉平、收油门</em></p>
       <div class="ctl" id="howto">
         <kbd>左拇指</kbd><span>杆 · 下拖带杆，上推松杆，松手回中</span>
-        <kbd>右拇指</kbd><span>油门 · 上推加，下拉收，松手停住</span>
-        <kbd>压盘</kbd><span id="rollnote">手机左右转；没有陀螺仪时左拇指左右拖</span>
-        <kbd>方向舵</kbd><span>屏幕底部中间左右拖 · 侧风对正机头、落地后保持中线</span>
-        <kbd>复飞</kbd><span>不稳定就把油门推到顶 · 复飞也算成绩</span>
+        <kbd>右拇指</kbd><span>油门 · 上推加，下拉收 · 推到顶 = 复飞</span>
+        <kbd>压盘</kbd><span id="rollnote">手机像方向盘一样左右转</span>
+        <kbd>方向舵</kbd><span id="rudnote">左拇指左右拖 · 侧风对正机头、落地后保持中线</span>
       </div>
       <button class="go" id="go">开始 <span>→</span></button>
       <div class="disc">模拟示意，仅供个人分享交流，不是操作教学，不代表任何机型的飞控逻辑和数据。实际运行一律以所在公司手册和局方要求为准。</div>
@@ -140,7 +152,14 @@ h1 .w{display:block;color:var(--ink)} h1 .b{display:block;color:var(--blue)} h1 
   </div>
 </div>
 
-<div class="pane" id="rot">请把手机横过来</div>
+<div class="pane" id="rot">
+  <div class="rk">Flight Mode · 互动模拟飞行</div>
+  <div class="rt"><span>来，</span><b>落一次地</b></div>
+  <div class="ph" aria-hidden="true"><i></i></div>
+  <div class="rs">把手机横过来</div>
+  <div class="rn">转不过来的话，先在控制中心关掉“竖排方向锁定”</div>
+  <div class="rd">模拟示意，仅供个人分享交流，不是操作教学。</div>
+</div>
 
 <script src="three.min.js"></script>
 <script>
@@ -1718,18 +1737,16 @@ const $ = id => document.getElementById(id);
 // ───────── 输入：左拇指杆、右拇指油门、手机左右转压盘 ─────────
 const inp = { rud:0, kr:0, krh:0, fr:0, sx:0, sy:0, fx:0, fy:0, lever:.5, rawX:0, zeroX:0, tilt:false, kx:0, ky:0, kt:0, kxh:0, kyh:0 };
 function rollFromGravity(ax, ay, az){
-  const a = ((screen.orientation && screen.orientation.angle) || window.orientation || 0) * D2R;
-  const sx = ax * Math.cos(a) + ay * Math.sin(a), sy = -ax * Math.sin(a) + ay * Math.cos(a);
-  return Math.atan2(sx, Math.abs(sy) + 1e-6) / D2R * Math.sign(sy || 1);
+  return (Math.abs(ax) >= Math.abs(ay) ? Math.atan2(ay * Math.sign(ax || 1), Math.abs(ax) + 1e-6) : Math.atan2(-ax * Math.sign(ay || 1), Math.abs(ay) + 1e-6)) / D2R;
 }
 function onMotion(e){ const g = e.accelerationIncludingGravity; if (!g || g.x == null) return;
-  inp.rawX = rollFromGravity(g.x, g.y, g.z); if (!inp.tilt) { inp.tilt = true; inp.zeroX = inp.rawX; const r = $('rollnote'); if (r) r.textContent = '已检测到陀螺仪'; } }
+  inp.rawX = rollFromGravity(g.x, g.y, g.z); if (!inp.tilt) { inp.tilt = true; inp.zeroX = inp.rawX; const r = $('rollnote'); if (r) r.textContent = '手机像方向盘一样左右转'; const q = $('rudnote'); if (q) q.textContent = '左拇指左右拖 · 侧风对正机头、落地后保持中线'; } }
 const wrap = d => ((d + 540) % 360) - 180;
 const ptr = new Map();
-cv.addEventListener('pointerdown', e => { const role = e.clientY > innerHeight * .62 && Math.abs(e.clientX - innerWidth / 2) < innerWidth * .15 ? 'rud' : e.clientX < innerWidth / 2 ? 'stick' : 'thr'; ptr.set(e.pointerId, { role, x0:e.clientX, y0:e.clientY, l0:inp.lever }); cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointerdown', e => { const role = !inp.tilt && e.clientY > innerHeight * .5 && Math.abs(e.clientX - innerWidth / 2) < innerWidth * .2 ? 'rud' : e.clientX < innerWidth / 2 ? 'stick' : 'thr'; ptr.set(e.pointerId, { role, x0:e.clientX, y0:e.clientY, l0:inp.lever }); cv.setPointerCapture(e.pointerId); });
 cv.addEventListener('pointermove', e => { const p = ptr.get(e.pointerId); if (!p) return;
   if (p.role === 'stick') { inp.sy = CL(-1, 1, (e.clientY - p.y0) / (innerHeight * .28)); inp.sx = CL(-1, 1, (e.clientX - p.x0) / (innerWidth * .14)); }
-  else if (p.role === 'rud') inp.rud = CL(-1, 1, (e.clientX - p.x0) / (innerWidth * .09));
+  else if (p.role === 'rud') inp.rud = CL(-1, 1, (e.clientX - p.x0) / (innerWidth * .11));
   else inp.lever = CL(0, 1, p.l0 - (e.clientY - p.y0) / (innerHeight * .55)); });
 const up = e => { const p = ptr.get(e.pointerId); if (p && p.role === 'stick') { inp.sy = 0; inp.sx = 0; } if (p && p.role === 'rud') inp.rud = 0; ptr.delete(e.pointerId); };
 cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
@@ -1744,7 +1761,7 @@ function readInput(dt){                                       // 返回 [杆前�
   const y = touchStick ? inp.sy : inp.kyh;
   const x = inp.tilt ? CL(-1, 1, wrap(inp.rawX - inp.zeroX) / 25) : (touchStick ? inp.sx : inp.kxh);
   inp.fy += (y - inp.fy) * Math.min(1, dt / .07); inp.fx += (x - inp.fx) * Math.min(1, dt / .07);
-  inp.krh = CL(-1, 1, inp.krh + inp.kr * 2.5 * dt - (inp.kr ? 0 : inp.krh * 5 * dt)); const r = [...ptr.values()].some(p => p.role === 'rud') ? inp.rud : inp.krh; inp.fr += (r - inp.fr) * Math.min(1, dt / .07);
+  inp.krh = CL(-1, 1, inp.krh + inp.kr * 2.5 * dt - (inp.kr ? 0 : inp.krh * 5 * dt)); const r = inp.tilt && touchStick ? inp.sx : [...ptr.values()].some(p => p.role === 'rud') ? inp.rud : inp.krh; inp.fr += (r - inp.fr) * Math.min(1, dt / .07);
   return [inp.fy, inp.fx, inp.lever, inp.fr];
 }
 
@@ -1941,7 +1958,7 @@ function showResult(){
     $('why').textContent = bad ? `进近不稳定（${S.gate.why.join('、')}）· 复飞是对的决定` : '进近是稳定的，也选择了复飞 · 拿不准就复飞，从来不算错';
     $('gval').textContent = '没有接地'; $('gval').style.color = 'var(--green)';
     const rows = [['开始复飞的高度', `约 ${Math.round(S.ga.ra)} 英尺`], ['最低高度', `约 ${Math.max(0, Math.round(S.minH / FT))} 英尺`], ['100 英尺检查点（示意）', gateTxt], ['复飞推力', engTxt(S.eng)], ['本场景最好成绩', starTxt(rec.s) + (rec.g != null ? ` · ${rec.g.toFixed(2)} g` : '')], ['机型 · 操纵', `${A.name} · ${LAWNAME[LAW]}（示意）`]];
-    $('tbl').innerHTML = rows.map(r => `<div class="st"><span>${r[0]}</span><b>${r[1]}</b></div>`).join(''); $('res').classList.remove('hide'); drawTrace(); return; }
+    $('tbl').innerHTML = rows.map(r => `<div class="st"><span>${r[0]}</span><b>${r[1]}</b></div>`).join(''); $('res').classList.remove('hide'); fit(); drawTrace(); return; }
   const t = S.td, vs = Math.round(t.vs / 10) * 10, dist = Math.round(t.y), kt = Math.round(t.V / KT), [g1, g2, g3] = A.grade;
   let grade, why, col;
   if (vs > g3) { grade = '重着陆'; why = '下沉没减下来 · 拉开始再早一点、连续一点'; col = '#FF5A4E'; }
@@ -1971,7 +1988,7 @@ function showResult(){
   if (SCENES[SCN].xwind) rows.splice(4, 0, ['接地偏流角', `机头偏${t.crab > 0 ? '右' : '左'}约 ${Math.abs(t.crab).toFixed(1)}°`]);
   $('gval').textContent = `${t.g.toFixed(2)} g · ${gTxt}`; $('gval').style.color = t.g >= 1.6 ? 'var(--red)' : t.g >= 1.3 ? 'var(--amber)' : 'var(--green)';
   $('tbl').innerHTML = rows.map(r => `<div class="st"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('');
-  $('res').classList.remove('hide'); drawTrace();
+  $('res').classList.remove('hide'); fit(); drawTrace();
 }
 
 // ───────── 画面 ─────────
@@ -2030,12 +2047,12 @@ function hud(c, W, H, sy, sx){
   if (PLAYS < 3 && !S.ga) { let tip = null;
     if (man && ft < 70 && ft > 12 && S.flareFt == null) tip = ['FLARE', '柔和带杆 · 左拇指往下拖，别一把拉到底'];
     else if (man && ft < 25 && inp.lever > .03) tip = ['THRUST IDLE', '收油门 · 右拇指拖到底'];
-    else if (S.phase === 'roll' && !S.fail) tip = ['KEEP CENTERLINE', '底部中间左右拖 = 方向舵，保持中线'];
-    else if (man && SCENES[SCN].xwind && ft > 70 && S.mt > 2) tip = ['CROSSWIND', '侧风：底部中间左右拖 = 方向舵，接地前把机头对正'];
+    else if (S.phase === 'roll' && !S.fail) tip = ['KEEP CENTERLINE', inp.tilt ? '左拇指左右拖 = 方向舵，保持中线' : '下方中间左右拖 = 方向舵，保持中线'];
+    else if (man && SCENES[SCN].xwind && ft > 70 && S.mt > 2) tip = ['CROSSWIND', inp.tilt ? '侧风：左拇指左右拖 = 方向舵，接地前把机头对正' : '侧风：下方中间左右拖 = 方向舵，接地前把机头对正'];
     if (tip) chip(c, bx, H * .6, k, tip[0], tip[1], '#3CFF6E', 'center', .92); }
   // 方向舵指示
-  if (S.phase !== 'auto') { const yb = A.panel === 'six' ? H * .73 - 22 * k : H - 30 * k, w = 70 * k; c.save(); c.globalAlpha = .85; c.fillStyle = 'rgba(6,10,22,.6)'; c.fillRect(bx - w, yb - 4 * k, w * 2, 8 * k); c.fillStyle = 'rgba(242,239,232,.4)'; c.fillRect(bx - 1 * k, yb - 8 * k, 2 * k, 16 * k);
-    c.fillStyle = '#9fd3ff'; c.shadowColor = '#5AB0FF'; c.shadowBlur = 12 * k; c.fillRect(bx + inp.fr * w * .9 - 9 * k, yb - 6 * k, 18 * k, 12 * k); c.restore(); htxt(c, 'RUDDER', bx, yb + 16 * k, 10 * k, 'rgba(242,239,232,.55)', 1, 'center', 600); }
+  if (S.phase !== 'auto') { const yb = A.panel === 'six' ? H * .73 - 26 * k : H - 34 * k, w = 120 * k; c.save(); c.globalAlpha = .85; c.fillStyle = 'rgba(6,10,22,.6)'; c.fillRect(bx - w, yb - 7 * k, w * 2, 14 * k); c.fillStyle = 'rgba(242,239,232,.4)'; c.fillRect(bx - 1 * k, yb - 12 * k, 2 * k, 24 * k);
+    c.fillStyle = '#9fd3ff'; c.shadowColor = '#5AB0FF'; c.shadowBlur = 12 * k; c.fillRect(bx + inp.fr * w * .9 - 14 * k, yb - 10 * k, 28 * k, 20 * k); c.restore(); htxt(c, inp.tilt ? 'RUDDER · 左拇指左右' : 'RUDDER · 在这里左右拖', bx, yb + 22 * k, 11 * k, 'rgba(242,239,232,.55)', 1, 'center', 600); }
   // 偏离中线
   if ((man || S.phase === 'roll') && Math.abs(S.x) > 3) chip(c, bx, H * .08, k, `LOC · ${S.x > 0 ? 'R' : 'L'} ${Math.abs(S.x).toFixed(0)} M`, `偏${S.x > 0 ? '右' : '左'} ${Math.abs(S.x).toFixed(0)} 米`, Math.abs(S.x) > 12 ? '#FFB21E' : '#5AB0FF', 'center');
   // 交给你了
@@ -2126,6 +2143,12 @@ $('go').onclick = async () => {
 };
 $('again').onclick = () => { reset(); flashFt = null; fl = null; gFlash = null; $('res').classList.add('hide'); $('res').classList.remove('fail'); };
 $('menu').onclick = () => { $('res').classList.add('hide'); $('intro').classList.remove('hide'); running = false; demoT = 0; ambOff(); };
+function fit(){ document.documentElement.style.setProperty('--H', innerHeight + 'px');
+  document.querySelectorAll('.stage').forEach(st => { const cs = getComputedStyle(st), avail = st.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    for (const el of st.children) { el.style.transform = ''; el.style.alignSelf = 'start'; el.style.height = 'auto'; const need = el.offsetHeight; el.style.alignSelf = ''; el.style.height = '';
+      if (need > avail + 1) { el.style.transformOrigin = el.classList.contains('right') ? 'right center' : 'left center'; el.style.transform = `scale(${Math.max(.55, avail / need)})`; } } }); }
+addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300)); if (window.visualViewport) visualViewport.addEventListener('resize', fit); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); fit(); setTimeout(fit, 600);
+if (!matchMedia('(pointer:coarse)').matches) { const r = $('rollnote'), q = $('rudnote'); if (r) r.textContent = '方向键左右'; if (q) q.textContent = 'A / D 键 · 侧风对正机头、落地后保持中线'; }
 reset(); requestAnimationFrame(frame);
 // 测试用：__sim(机型, 法则, 从多少英尺开始带杆, 带杆量 0..1, 多少英尺收油门)
 window.__sim = (ac, law, flareFt, pull, retFt, scn) => { const A0 = ACK, L0 = LAW, S0 = SCN; setAircraft(ac); LAW = law; SCN = scn || 'neon'; reset(); let t = 0, lever = THR_EQ;
